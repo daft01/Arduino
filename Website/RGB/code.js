@@ -1,5 +1,5 @@
-let width = 15;
-let height = 15;
+let width = 30;
+let height = 30;
 let color_history_size = 6;
 var color_history_array = []
 let suggeested_colors_size = 6;
@@ -53,15 +53,15 @@ function setBoard(){
 
 $('.square').click(function() {
     $(this).css('background-color', $("#currrentColor").css('backgroundColor'));
-});
-
-$("input[name='colorWheel']").change(function() {
-    updateCurrentColor(this.id)
+    $("#clicked").css('background-color', $(this).css('backgroundColor'));
 });
 
 $('.color').click(function() {
-    console.log($(this).attr("id"))
     updateCurrentColor(this.id)
+});
+
+$('#selectColorWheel').click(function(){
+    updateCurrentColor("colorWheel")
 });
 
 $('#getCode').click(function(){
@@ -70,61 +70,49 @@ $('#getCode').click(function(){
 
 	for(var i=0; i<height*width; i++){
         
-        if($("#" + i).css("background-color") === "rgba(0, 0, 0, 0)")
-            code += "#ffffff";
-        else
-            code += rgbToHex(i);
+        code += rgbToHex("#" + i);
                 
         if(i%width == width-1)
-            code += "}, {";
+            code += "},{";
         else
             code += ",";
 	}
 
     code = code.substring(0, code.length - 3);
     code += "},";
-    console.log(code);
                     
     $("#code").val(code);
 });
 
 function updateCurrentColor(id){
-    let color = rgbToHex(id)
     id = "#" + id
+    let color = rgbToHex(id)
     
-    $("#currrentColor").css('background-color', $(id).css('backgroundColor'));
-    
-    let index = color_history_array.indexOf(color)
-    console.log(color)
-    console.log(index)
-    
-    if(index == -1){
-        
-        for(var i=color_history_size-1; i>0; i--){
-            let temp_color = $("#colorHistory" + (i-1)).css("background-color");
-            $("#colorHistory"+i).css('background-color', temp_color);
-
-            color_history_array[i-1] = color_history_array[i]
-        }
-        
-        $("#colorHistory0").css('background-color', color);
+    if(id == "#colorWheel"){
+        $("#currrentColor").css('background-color', $("#" + "colorWheel").val());
     }else{
-        for(var i=index; i>0; i--){
-            let temp_color = $("#colorHistory" + (i-1)).css("background-color");
-            $("#colorHistory"+i).css('background-color', temp_color);
-            
-            color_history_array[i-1] = color_history_array[i]
-        }
-        
-        $("#colorHistory0").css('background-color', color);
+        $("#currrentColor").css('background-color', $(id).css('backgroundColor'));
     }
     
-    console.log(color_history_array)
+    let index = color_history_array.indexOf(color)
+    console.log(index)
+    
+    if(index == -1)
+        
+    for(var i=color_history_size-1; i>0; i--){
+        let temp_color = $("#colorHistory" + (i-1)).css("background-color");
+        $("#colorHistory"+i).css('background-color', temp_color);
+
+        color_history_array[i-1] = color_history_array[i]
+    }
+    
+    $("#colorHistory0").css('background-color', color);
 }
 
 function rgbToHex(id){
-    id = "#" + id
+    
     var rgb = $(id).css('backgroundColor').match(/\d+/g);
+    console.log(rgb)
     var hex = '#'+ String('0' + Number(rgb[0]).toString(16)).slice(-2) + String('0' + Number(rgb[1]).toString(16)).slice(-2) + String('0' + Number(rgb[2]).toString(16)).slice(-2);
     return hex;
 }
