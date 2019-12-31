@@ -1,5 +1,5 @@
-let width = 30;
-let height = 30;
+let width = 15;
+let height = 15;
 let color_history_size = 6;
 var color_history_array = []
 let suggeested_colors_size = 6;
