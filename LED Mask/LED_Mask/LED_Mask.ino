@@ -3,7 +3,7 @@
 
 // How many leds in your strip?
 #define NUM_LEDS 82
-#define DATA_PIN 4
+#define DATA_PIN 2
 #define FORWARD 0
 #define BACKWARD 1
 #define SLOW 250
@@ -14,6 +14,12 @@
 #define MASK_WIDTH 11
 CRGB leds[NUM_LEDS];
 boolean direction = FORWARD;
+int current = 16748655;
+
+// Control
+int RECV_PIN = 4;
+IRrecv irrecv(RECV_PIN);
+decode_results results;
 
 signed char letters[26][HEIGHT][WIDTH] = {
                       {{0,1,1,0,0,-1}, {1,0,0,1,0,-1}, {1,0,0,1,0,-1}, {1,1,1,1,0,-1}, {1,0,0,1,0,-1}, {1,0,0,1,0,-1}}, // A
@@ -48,20 +54,114 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
   FastLED.setBrightness(200);
   randomSeed(analogRead(0));
+
+  irrecv.enableIRIn(); // Start the control receiver
+  
   Serial.begin(9600);
 }
 
 void loop() { 
 
-  displayText("snails", CRGB::Red, 200);
-  rainbow(0,NULL);
-  cylon(randomColor(), 10,FAST);
-  lightning(NULL,50,100,MEDIUM);
-  theaterChaseRainbow(1,MEDIUM);
-  rainbow(FAST,1);
-  disolve(50,100,FAST);
-  flash(NULL,100,MEDIUM);
-  colorWipe(randomColor(),FAST);
+  if (irrecv.decode(&results)) {
+    Serial.println("lol");
+    current = results.value;
+    disolve(50,100, 5);
+    irrecv.resume();
+  }
+
+  switch(current){
+    case 16753245:
+      Serial.println("CH-");
+      break;
+    case 16736925:
+      Serial.println("CH");
+      break;
+    case 16769565:
+      Serial.println("CH+");
+      break;
+    case 16720605:
+      Serial.println("PREV");
+      break;
+    case 16712445:
+      Serial.println("NEXT");
+      break;
+    case 16761405:
+      Serial.println("PLAY/PAUSE");
+      break;
+    case 16769055:
+      Serial.println("-");
+      break;
+    case 16754775:
+      Serial.println("+");
+      break;
+    case 16748655:
+      Serial.println("EQ"); // Snails text
+      displayText("snails", CRGB::Red, 65);
+      break;
+    case 16738455:
+      Serial.println("0");  // Theater Chase Rainbow
+      theaterChaseRainbow(1,MEDIUM);
+      break;
+    case 16750695:
+      Serial.println("100+"); 
+      break;
+    case 16756815:
+      Serial.println("200+");
+      break;
+    case 16724175:
+      Serial.println("1"); //Cylon
+      cylon(randomColor(), 10,FAST);
+      break;
+    case 16718055:
+      Serial.println("2"); // Rainbow
+      rainbow(0,NULL); 
+      break;
+    case 16743045:
+      Serial.println("3");  // Lightning
+      lightning(NULL,50,100,MEDIUM);
+      break;
+    case 16716015:
+      Serial.println("4"); // Flash
+      flash(NULL,100,MEDIUM);
+      break;
+    case 16726215:
+      Serial.println("5"); // Color Wipe
+      colorWipe(randomColor(),FAST);
+      break;
+    case 16734885:
+      Serial.println("6");
+      displayText("snails", CRGB::Red, 65);
+      rainbow(0,NULL);
+      cylon(randomColor(), 10,FAST);
+      lightning(NULL,50,100,MEDIUM);
+      theaterChaseRainbow(1,MEDIUM);
+      rainbow(FAST,1);
+      disolve(50,100,FAST);
+      flash(NULL,100,MEDIUM);
+      colorWipe(randomColor(),FAST);
+      break;
+    case 16728765:
+      Serial.println("7");
+      break;
+    case 16730805:
+      Serial.println("8");
+      break;
+    case 16732845:
+      Serial.println("9");
+      break;
+  }
+  
+  Serial.println(current);
+  
+//  displayText("snails", CRGB::Red, 200);
+//  rainbow(0,NULL);
+//  cylon(randomColor(), 10,FAST);
+//  lightning(NULL,50,100,MEDIUM);
+//  theaterChaseRainbow(1,MEDIUM);
+//  rainbow(FAST,1);
+//  disolve(50,100,FAST);
+//  flash(NULL,100,MEDIUM);
+//  colorWipe(randomColor(),FAST);
  
 }
 

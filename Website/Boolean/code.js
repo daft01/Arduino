@@ -1,5 +1,5 @@
-var width = 4;
-var height = 6;
+var width = 15;
+var height = 15;
 var set = new Set();
 
 setBoard();

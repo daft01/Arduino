@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LED Sign</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    
+    <div class="center">
+        <div class="row">
+            <label for="currrentColor" class="text">Current Color</label>
+            <div id="currrentColor" class="color"></div>
+            <label for="currrentColor" id="currentColorHex"></label>
+        </div>
+    
+        <div class="row">
+            <label for="colorWheel" class="text">Color Wheel</label>
+            <input type="color" name="colorWheel" id="colorWheel" value="#FFFFFF" class="color">
+            <label for="colorWheel" id="colorWheelHex"></label>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div>
+            <label class="text">Color History</label>
+            <div id="colorHistory" class="center"></div>
+        </div>
+        
+        <div id="matrix"></div>
+        
+        <div>
+            <label class="text">Basic Colors</label>
+            <div id="suggeestedColors" class="center"></div>
+        </div>
+    </div>
+    
+    <button id="getCode" class="text">Get Code</button>
+    <input type="text" id="code" class="text"></input>
+
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="code.js"></script>
+
+</body>
+</html>
