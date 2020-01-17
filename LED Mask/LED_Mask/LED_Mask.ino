@@ -14,7 +14,8 @@
 #define MASK_WIDTH 11
 CRGB leds[NUM_LEDS];
 boolean direction = FORWARD;
-int current = 16748655;
+int current = -1;
+int count = 0;
 
 // Control
 int RECV_PIN = 4;
@@ -63,106 +64,91 @@ void setup() {
 void loop() { 
 
   if (irrecv.decode(&results)) {
-    Serial.println("lol");
-    current = results.value;
-    disolve(50,100, 5);
+
+    switch(results.value){
+      case 16753245:
+        Serial.println("CH-");
+        break;
+      case 16736925:
+        Serial.println("CH");
+        break;
+      case 16769565:
+        Serial.println("CH+");
+        break;
+      case 16720605:
+        Serial.println("PREV");
+        break;
+      case 16712445:
+        Serial.println("NEXT");
+        break;
+      case 16761405:
+        Serial.println("PLAY/PAUSE");
+        break;
+      case 16769055:
+        Serial.println("-");
+        break;
+      case 16754775:
+        Serial.println("+");
+        break;
+      case 16748655:
+        Serial.println("EQ"); // Text
+        all();
+        break;
+      case 16750695:
+        Serial.println("100+"); 
+        break;
+      case 16756815:
+        Serial.println("200+");
+        break;
+      case 16738455:
+        Serial.println("0"); // Theater Chase Rainbow Blink
+        theaterChaseRainbow(1,MEDIUM, true);
+        break;
+      case 16724175:
+        Serial.println("1"); //Cylon
+        cylon(randomColor(), 10,FAST);
+        break;
+      case 16718055:
+        Serial.println("2"); // Rainbow
+        rainbow(FAST,1);
+        break;
+      case 16743045:
+        Serial.println("3");  // Lightning
+        lightning(NULL,50,100,MEDIUM);
+        break;
+      case 16716015:
+        Serial.println("4"); // Flash
+        flash(NULL,100,MEDIUM);
+        break;
+      case 16726215:
+        Serial.println("5"); // Color Wipe
+        for(int i=0; i<2147483647; i++)
+          colorWipe(randomColor(),FAST);
+        break;
+      case 16734885:
+        Serial.println("6"); 
+      case 16728765:
+        Serial.println("7");
+        break;
+      case 16730805:
+        Serial.println("8");
+        break;
+      case 16732845:
+        Serial.println("9");
+        displayText("woobleland", CRGB::Red, 65);
+        break;
+    }
     irrecv.resume();
   }
 
-  switch(current){
-    case 16753245:
-      Serial.println("CH-");
-      break;
-    case 16736925:
-      Serial.println("CH");
-      break;
-    case 16769565:
-      Serial.println("CH+");
-      break;
-    case 16720605:
-      Serial.println("PREV");
-      break;
-    case 16712445:
-      Serial.println("NEXT");
-      break;
-    case 16761405:
-      Serial.println("PLAY/PAUSE");
-      break;
-    case 16769055:
-      Serial.println("-");
-      break;
-    case 16754775:
-      Serial.println("+");
-      break;
-    case 16748655:
-      Serial.println("EQ"); // Snails text
-      displayText("snails", CRGB::Red, 65);
-      break;
-    case 16738455:
-      Serial.println("0");  // Theater Chase Rainbow
-      theaterChaseRainbow(1,MEDIUM);
-      break;
-    case 16750695:
-      Serial.println("100+"); 
-      break;
-    case 16756815:
-      Serial.println("200+");
-      break;
-    case 16724175:
-      Serial.println("1"); //Cylon
-      cylon(randomColor(), 10,FAST);
-      break;
-    case 16718055:
-      Serial.println("2"); // Rainbow
-      rainbow(0,NULL); 
-      break;
-    case 16743045:
-      Serial.println("3");  // Lightning
-      lightning(NULL,50,100,MEDIUM);
-      break;
-    case 16716015:
-      Serial.println("4"); // Flash
-      flash(NULL,100,MEDIUM);
-      break;
-    case 16726215:
-      Serial.println("5"); // Color Wipe
-      colorWipe(randomColor(),FAST);
-      break;
-    case 16734885:
-      Serial.println("6");
-      displayText("snails", CRGB::Red, 65);
-      rainbow(0,NULL);
-      cylon(randomColor(), 10,FAST);
-      lightning(NULL,50,100,MEDIUM);
-      theaterChaseRainbow(1,MEDIUM);
-      rainbow(FAST,1);
-      disolve(50,100,FAST);
-      flash(NULL,100,MEDIUM);
-      colorWipe(randomColor(),FAST);
-      break;
-    case 16728765:
-      Serial.println("7");
-      break;
-    case 16730805:
-      Serial.println("8");
-      break;
-    case 16732845:
-      Serial.println("9");
-      break;
+  count++;
+
+  if(count > 1000){
+    all();
   }
+
+  Serial.println(count);
   
-  Serial.println(current);
-  
-//  displayText("snails", CRGB::Red, 200);
-//  rainbow(0,NULL);
-//  cylon(randomColor(), 10,FAST);
-//  lightning(NULL,50,100,MEDIUM);
-//  theaterChaseRainbow(1,MEDIUM);
-//  rainbow(FAST,1);
-//  disolve(50,100,FAST);
-//  flash(NULL,100,MEDIUM);
-//  colorWipe(randomColor(),FAST);
- 
 }
 
 // Changes all LEDS to given color
@@ -245,28 +231,8 @@ void rainbow(int cycles, int speed){ // TODO direction
   }
 }
 
-// Theater-style crawling lights
-void theaterChase(CRGB c, int cycles, int speed){ // TODO direction
-
-  for (int j=0; j<cycles; j++) {  
-    for (int q=0; q < 3; q++) {
-      for (int i=0; i < NUM_LEDS; i=i+3) {
-        int pos = i+q;
-        leds[pos] = c;    //turn every third pixel on
-      }
-      FastLED.show();
-
-      delay(speed);
-
-      for (int i=0; i < NUM_LEDS; i=i+3) {
-        leds[i+q] = CRGB::Black;        //turn every third pixel off
-      }
-    }
-  }
-}
-
 // Theater-style crawling lights with rainbow effect
-void theaterChaseRainbow(int cycles, int speed){ // TODO direction, duration
+void theaterChaseRainbow(int cycles, int speed, bool blink){ // TODO direction, duration
   for (int j=0; j < 256 * cycles; j++) {     // cycle all 256 colors in the wheel
     for (int q=0; q < 3; q++) {
       for (int i=0; i < NUM_LEDS; i=i+3) {
@@ -277,9 +243,26 @@ void theaterChaseRainbow(int cycles, int speed){ // TODO direction, duration
 
       delay(speed);
 
-      for (int i=0; i < NUM_LEDS; i=i+3) {
-        leds[i+q] = CRGB::Black;  //turn every third pixel off
+      
+      if(blink){
+        for (int i=0; i < NUM_LEDS; i=i+3) {
+          leds[i+q] = CRGB::Black;  //turn every third pixel off
+        }
       }
+    }
+  }
+}
+
+void theaterChaseRainbow(int cycles, int speed){ // TODO direction, duration
+  for (int j=0; j < 256 * cycles; j++) {     // cycle all 256 colors in the wheel
+    for (int q=0; q < 3; q++) {
+      for (int i=0; i < NUM_LEDS; i=i+3) {
+        int pos = i+q;
+        leds[pos] = Wheel( (i+j) % 255);    //turn every third pixel on
+      }
+      FastLED.show();
+
+      delay(speed);
     }
   }
 }
@@ -436,5 +419,26 @@ void moveText(){
         if( ( row%2 != 0) )
             leds[i] = leds[i-1];
     }
+}
+
+void all(){
+
+  for(int i=0; i<6; i++)
+    rainbow(FAST,1);
+
+  for(int i=0; i<40; i++)
+    cylon(randomColor(), 10,FAST);
+
+  for(int i=0; i<3; i++)
+    lightning(NULL,50,100,MEDIUM);
+
+  for(int i=0; i<1; i++)
+    theaterChaseRainbow(1,MEDIUM,true);
   
+  for(int i=0; i<50; i++)
+    colorWipe(randomColor(),FAST);
+
+  for(int i=0; i<10; i++)
+    flash(NULL,100,MEDIUM);
+      
 }
